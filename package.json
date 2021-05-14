@@ -1,0 +1,25 @@
+{
+  "name": "chat-mongo-socket",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Eduardo Ramiro de Rivero Manrique <ederiveroman@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start:dev": "nodemon --exec babel-node ./src/index.js",
+    "start": "node ./build/index.js",
+    "build": "babel src/ --out-dir buid/"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.12.9",
+    "socket.io": "^4.1.1",
+    "dotenv": "^9.0.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.14.2",
+    "@babel/node": "^7.14.2",
+    "@babel/preset-env": "^7.14.2",
+    "nodemon": "^2.0.7"
+  }
+}
