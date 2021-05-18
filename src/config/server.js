@@ -1,6 +1,10 @@
 import express from "express";
 import { json } from "body-parser";
+import { createServer } from "http";
 import { connect } from "mongoose";
+import { Server as socketio } from "socket.io";
+import { cerrarSesion, iniciarSesion } from "../controller/socket";
+import { usuario_router } from "../routes/usuario";
 // sirve para utilizar las variables del archivo .env
 require("dotenv").config();
 
@@ -8,9 +12,20 @@ export class Server {
   constructor() {
     this.app = express();
     this.puerto = process.env.PORT || 5000;
+    this.httpServer = new createServer(this.app);
+    this.io = new socketio(this.httpServer, { cors: { origin: "*" } });
     this.bodyParser();
     this.CORS();
     this.rutas();
+    this.escucharSockets();
+    if (typeof Server.instance === "object") {
+      console.log("ya habia una instancia creada");
+      return Server.instance;
+    } else {
+      console.log("no habia");
+      Server.instance = this;
+      return this;
+    }
   }
   CORS() {
     this.app.use((req, res, next) => {
@@ -31,9 +46,25 @@ export class Server {
     this.app.get("/", (req, res) => {
       res.send("Bienvenido a mi API 😀");
     });
+    this.app.use(usuario_router);
+  }
+  escucharSockets() {
+    console.log("escuchando socket");
+    this.io.on("connect", (cliente) => {
+      console.log("Se conectó " + cliente.id);
+      cliente.on("login", async (usuario) => {
+        iniciarSesion(usuario);
+      });
+      cliente.on("logout", async (usuario) => {
+        cerrarSesion(usuario);
+      });
+      cliente.on("disconnect", () => {
+        console.log("Se desconectó " + cliente.id);
+      });
+    });
   }
   start() {
-    this.app.listen(this.puerto, () => {
+    this.httpServer.listen(this.puerto, () => {
       console.log(
         `Servidor corriendo exitosamente en el puerto ${this.puerto}`
       );
@@ -42,7 +73,7 @@ export class Server {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useCreateIndex: true,
-        useFindAndModify: true,
+        useFindAndModify: false,
       })
         .then(() => {
           console.log("Base de datos conectada exitosamente");
