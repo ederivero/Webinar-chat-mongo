@@ -40,7 +40,7 @@ export class Server {
   CORS() {
     this.app.use((req, res, next) => {
       // Permitir los origenes (dominios) para que puedan consultar a mi API
-      res.header("Access-Control-Allow-Origin", "*");
+      res.header("Access-Control-Allow-Origins", "*");
       // Permitir las cabeceras siguientes
       res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
       // Permitir los metodos siguientes
