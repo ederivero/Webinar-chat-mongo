@@ -21,7 +21,7 @@ export const crearMensaje = async (data) => {
   });
   await Usuario.findOneAndUpdate({ usuario_correo }, { mensajes });
   const usuarios = await Usuario.find();
-  objServidor.io.emit("emitirMensajes", { usuarios });
+  objServidor.io.emit("emitir-mensajes", { usuarios });
 };
 
 const sesiones = async (usuario, accion) => {
@@ -44,7 +44,7 @@ const sesiones = async (usuario, accion) => {
     const usuariosActivos = await Usuario.find().where({
       usuario_estado: true,
     });
-    objServidor.io.emit("emitirUsuarios", { usuariosActivos });
+    objServidor.io.emit("emitir-usuarios", { usuariosActivos });
   } else {
     objServidor.io.disconnectSockets(true);
   }

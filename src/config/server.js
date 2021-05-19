@@ -3,14 +3,24 @@ import { json } from "body-parser";
 import { createServer } from "http";
 import { connect } from "mongoose";
 import { Server as socketio } from "socket.io";
-import { cerrarSesion, iniciarSesion } from "../controller/socket";
+import swaggerUI from "swagger-ui-express";
+import exphbs from "express-handlebars";
+import {
+  cerrarSesion,
+  crearMensaje,
+  crearRoom,
+  iniciarSesion,
+} from "../controller/socket";
 import { usuario_router } from "../routes/usuario";
+import documentacion from "../../documentacion.json";
 // sirve para utilizar las variables del archivo .env
 require("dotenv").config();
 
 export class Server {
   constructor() {
     this.app = express();
+    this.app.engine("handlebars", exphbs());
+    this.app.set("view engine", "handlebars");
     this.puerto = process.env.PORT || 5000;
     this.httpServer = new createServer(this.app);
     this.io = new socketio(this.httpServer, { cors: { origin: "*" } });
@@ -44,19 +54,26 @@ export class Server {
   }
   rutas() {
     this.app.get("/", (req, res) => {
-      res.send("Bienvenido a mi API 😀");
+      res.render("inicio", { documentacion: `/api/docs` });
     });
     this.app.use(usuario_router);
+    this.app.use("/api/docs", swaggerUI.serve, swaggerUI.setup(documentacion));
   }
   escucharSockets() {
     console.log("escuchando socket");
     this.io.on("connect", (cliente) => {
       console.log("Se conectó " + cliente.id);
-      cliente.on("login", async (usuario) => {
+      cliente.on("login", (usuario) => {
         iniciarSesion(usuario);
       });
-      cliente.on("logout", async (usuario) => {
+      cliente.on("logout", (usuario) => {
         cerrarSesion(usuario);
+      });
+      cliente.on("crear-room", (room) => {
+        crearRoom(room);
+      });
+      cliente.on("crear-mensaje", (mensaje) => {
+        crearMensaje(mensaje);
       });
       cliente.on("disconnect", () => {
         console.log("Se desconectó " + cliente.id);

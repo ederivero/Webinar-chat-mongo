@@ -1,0 +1,181 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "Esta es la documentacion de la parte de las consultas API REST del webinar de chat de CodiGo. Aquí podrás encontrar todos los endpoints que puedes hacer al backend.",
+    "version": "1.0.0",
+    "title": "Webinar Chat Express",
+    "termsOfService": "https://www.tecsup.edu.pe/desarrolloweb/",
+    "contact": {
+      "email": "ederiveroman@gmail.com",
+      "name": "Eduardo de Rivero"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "host": "chat-webinar-codigo.herokuapp.com",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "usuario",
+      "description": "Todo lo relacionado con los usuarios del chat"
+    }
+  ],
+  "schemes": [
+    "https",
+    "http"
+  ],
+  "paths": {
+    "/register": {
+      "post": {
+        "tags": [
+          "usuario"
+        ],
+        "summary": "Registra un nuevo usuario para poder ingresar al chat",
+        "description": "Endpoint que registra un nuevo usuario",
+        "operationId": "addUser",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Objeto de la persona que necesita ser enviada",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Usuario creado",
+            "schema": {
+              "$ref": "#/definitions/ResponseUser"
+            }
+          },
+          "400": {
+            "description": "Usuario ya creado",
+            "schema": {
+              "$ref": "#/definitions/ResponseBadUser"
+            }
+          }
+        }
+      }
+    },
+    "/log-out/{id}": {
+      "post": {
+        "tags": [
+          "usuario"
+        ],
+        "summary": "Finalizar la sesion de un usuario",
+        "operationId": "endSession",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID del usuario",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Sesion finalizada"
+          },
+          "400": {
+            "description": "Usuario no encontrado"
+          }
+        },
+        "deprecated": true
+      }
+    }
+  },
+  "definitions": {
+    "UserRequest": {
+      "type": "object",
+      "properties": {
+        "usuario_correo": {
+          "type": "string",
+          "example": "user@correo.com"
+        },
+        "usuario_nombre": {
+          "type": "string",
+          "example": "Jhon Doe"
+        }
+      }
+    },
+    "Mensajes": {
+      "type": "object",
+      "properties": {
+        "mensaje_texto": {
+          "type": "string"
+        },
+        "mensaje_fecha": {
+          "type": "string"
+        },
+        "mensae_room": {
+          "type": "string"
+        }
+      }
+    },
+    "UserCreated": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+        "usuario_correo": {
+          "type": "string",
+          "example": "user@correo.com"
+        },
+        "usuario_nombre": {
+          "type": "string",
+          "example": "Jhon Doe"
+        },
+        "usuario_lastlogin": {
+          "type": "string",
+          "example": "2021-05-19T04:46:04.897Z"
+        },
+        "mensajes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Mensajes"
+          }
+        }
+      }
+    },
+    "ResponseUser": {
+      "type": "object",
+      "properties": {
+        "content": {
+          "$ref": "#/definitions/UserCreated"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "ResponseBadUser": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "example": "Usuario ya existe"
+        }
+      }
+    }
+  },
+  "externalDocs": {
+    "description": "Encuentra este repo en GitHub",
+    "url": "https://github.com/ederivero/Webinar-chat-mongo"
+  }
+}

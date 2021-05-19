@@ -19,7 +19,7 @@ export const registro = async (req, res) => {
 export const logout = async (req, res) => {
   const { id } = req.params;
   try {
-    await Usuario.findByIdAndUpdate(id, { usuario_estado: false });
+    await Usuario.findByIdAndUpdate({ _id: id }, { usuario_estado: false });
     return res.status(201).json({
       message: "Sesion finalizada",
     });
